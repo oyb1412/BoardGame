@@ -4,6 +4,7 @@ using DiceGame.Level;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace DiceGame.Character
@@ -14,7 +15,6 @@ namespace DiceGame.Character
 
         public const int DIRECTION_POSITIVE = 1;
         public const int DIRECTION_NEGATIVE = -1;
-        IWeaponStrategy weapon;
         // 1 : positive, -1 : negative
         public int direction { get; set; }
         
@@ -26,6 +26,10 @@ namespace DiceGame.Character
         {
             get => _state;
             set => _state = value;
+        }      
+        public IWeaponStrategy weaponStrateg {
+            get => _weaponStrategy;
+            set => _weaponStrategy = value;
         }
 
         public IHp target { get; set; }
@@ -37,9 +41,14 @@ namespace DiceGame.Character
         private float _attackPower = 10.0f;
         private Animator _animator;
         private State _state;
+
         private int _stateAnimatorHashID = Animator.StringToHash("State");
         private int _isDirtyAnimatorHashID = Animator.StringToHash("IsDirty");
         private int _SpeedAnimatorHashID = Animator.StringToHash("Speed");
+        private int _WeaponAnimatorHashID = Animator.StringToHash("Weapon");
+        private DamagePopUpFactory _damagePopUpFactory;
+        private IWeaponStrategy _weaponStrategy;
+        [SerializeField] Transform _rightHand;
         // event 한정자 : 외부 클래스에서는 이 대리자를 쓸 때 +=, -= 의 피연산자로만 사용가능
         public event Action<float> onHpDepleted;
 
@@ -50,18 +59,35 @@ namespace DiceGame.Character
             _hp = _hpMax;
             direction = DIRECTION_POSITIVE;
             _animator = GetComponent<Animator>();
+            _damagePopUpFactory = new DamagePopUpFactory();
+
             var stateMachineBehaviours = _animator.GetBehaviours<StateMachineBehaviourBase>();
             for (int i = 0; i < stateMachineBehaviours.Length; i++)
             {
                 stateMachineBehaviours[i].Init(this);
             }
         }
-        public void EquipWeapon(IWeaponStrategy weapon, GameObject prefab) {
-            this.weapon = weapon;
-            Instantiate(prefab);
+        private void Start() {
+            if(_rightHand.childCount > 0) {
+                weaponStrateg = _rightHand.GetChild(0).GetComponent<IWeaponStrategy>();
+                Transform transForm = _rightHand.GetChild(0).transform;
+                transForm.SetParent(_rightHand);
+                transForm.localPosition = Vector3.zero;
+                transform.localRotation = Quaternion.identity;
+                _animator.SetInteger(_WeaponAnimatorHashID, (int)weaponStrateg.WeaponType);
+            }
+        }
+        public void SetWeaponStrategy(IWeaponStrategy weapon, Transform transForm) {
+            if(_rightHand.childCount > 0) {
+                Destroy(_rightHand.GetChild(0).gameObject);
+            }
+            transForm.SetParent(_rightHand);
+            transForm.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            weaponStrateg = weapon;
+            _animator.SetInteger(_WeaponAnimatorHashID, (int)weaponStrateg.WeaponType);
         }
 
-        
         public void DepleteHp(float value)
         {
             if (_hp <= _hpMin || value <= 0)
@@ -106,16 +132,12 @@ namespace DiceGame.Character
                         t += _moveSpeed * Time.deltaTime;
                         yield return null;
                     }
-
-                    //이동이 끝나면 아이템 확인
-                    if (BoardGameMap.nodes[nextIndex].item) {
-                        BoardGameMap.nodes[nextIndex].item.Use(this);
-                    }
-
                     _animator.SetFloat(_SpeedAnimatorHashID, 0f);
 
                     //이동이 끝나면 노드 번호 변경
                     nodeIndex = nextIndex;
+
+                    
                 }
             }
 
@@ -131,7 +153,11 @@ namespace DiceGame.Character
         {
             if (target != null)
             {
-                weapon.Attack(target, _attackPower);
+                weaponStrateg.Attack(target,_attackPower, out float amountDamaged);
+                _damagePopUpFactory.Create(transform.position + Vector3.forward * 1.0f + Vector3.up * 1.2f,
+                Quaternion.identity,
+                amountDamaged,
+                DamageType.Normal);
             }
         }
 

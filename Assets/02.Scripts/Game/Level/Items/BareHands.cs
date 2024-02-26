@@ -5,17 +5,15 @@ using UnityEngine;
 
 namespace DiceGame.Level.items {
     public class BareHands : ItemEquipment, IWeaponStrategy {
-        public void Attack(IHp target, float attackPower) {
-            var _damagePopUpFactory = new DamagePopUpFactory();
-            _damagePopUpFactory.Create(transform.position + Vector3.forward * 1.0f + Vector3.up * 1.2f,
-                            Quaternion.identity,
-                            attackPower,
-                            DamageType.Normal);
-            target.DepleteHp(attackPower);
+        public WeaponType WeaponType => WeaponType.None;
+        [SerializeField] float _damageGain = 1f;
+        public void Attack(IHp target, float damage, out float amountDamaged) {
+            amountDamaged = damage * _damageGain;
+            target.DepleteHp(damage * _damageGain);
         }
 
         public override void Use(PlayerController controller) {
-            controller.EquipWeapon(this, renderModel);
+            controller.SetWeaponStrategy(this,transform);
         }
     }
 }

@@ -34,16 +34,13 @@ namespace DiceGame.Level
             
             if (_obstacle)
                 _obstacle.node = this;
-
-            if(_item)
-                _item.node = this;
-
         }
 
         //플레이어가 도착하면 기본적으로 이동 방향을 전방으로 변경
         public virtual void OnPlayerHere()
         {
             PlayerController.instance.direction = PlayerController.DIRECTION_POSITIVE;
+            item?.Use(PlayerController.instance);
         }
 
         public virtual void OnDiceRolled(int diceValue)
