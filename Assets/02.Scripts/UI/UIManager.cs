@@ -6,14 +6,22 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 namespace DiceGame.UI {
-    public class UIManager : SingletonBase<UIManager> {
+    public class UIManager : SingletonMonoBase<UIManager> {
+        //모든 UI를 등록할 필드
         private Dictionary<Type, IUI> _uis = new Dictionary<Type, IUI>();
         private List<IUIScreen> _screens = new List<IUIScreen>();
         private LinkedList<IUIPopUp> _popUps = new LinkedList<IUIPopUp>();
         private List<RaycastResult> _raycastResult = new List<RaycastResult>();
 
+        private void Update() {
+            if(_popUps.Count > 0) {
+                if(_popUps.Last.Value.inputActionEnable)
+                   _popUps.Last.Value.InputAction();
+            }
+        }
+
         /// <summary>
-        /// UI 최초 등록
+        /// 모든 UI 최초 등록
         /// </summary>
         /// <param name="ui">등록할 UI</param>
         /// <exception cref="Exception">동일한 UI가 씬에 두개 이상 존재할 때 호출</exception>

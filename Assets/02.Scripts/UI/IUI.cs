@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,9 @@ namespace DiceGame.UI {
         /// InputAction 을 수행할지에 대한 여부
         /// </summary>
         bool inputActionEnable { get; set; }
+        event Action onShow;
+        event Action onHide;
+        
         /// <summary>
         /// 이 UI와 유저가 상호작용 할 때 실행할 내용
         /// </summary>

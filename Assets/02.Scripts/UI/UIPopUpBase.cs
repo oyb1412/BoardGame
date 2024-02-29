@@ -1,6 +1,9 @@
 using UnityEngine;
 
 namespace DiceGame.UI {
+    /// <summary>
+    /// 팝업용 UI에 할당되는 클래스
+    /// </summary>
     public class UIPopUpBase : UIBase, IUIPopUp {
 
         public override void InputAction() {

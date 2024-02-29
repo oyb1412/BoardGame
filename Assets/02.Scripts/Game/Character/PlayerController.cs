@@ -1,6 +1,7 @@
 using DiceGame.Game;
 using DiceGame.Game.Effects;
 using DiceGame.Level;
+using DiceGame.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,6 +76,15 @@ namespace DiceGame.Character
                 transForm.localPosition = Vector3.zero;
                 transform.localRotation = Quaternion.identity;
                 _animator.SetInteger(_WeaponAnimatorHashID, (int)weaponStrateg.WeaponType);
+            }
+        }
+
+        private void Update() {
+            if(Input.GetKeyDown(KeyCode.I)) {
+               UIManager.instance.Get<UIIventory>().Toggle();
+            }
+            else if(Input.GetKeyDown(KeyCode.E)) {
+               UIManager.instance.Get<UIEquipped>().Toggle();
             }
         }
         public void SetWeaponStrategy(IWeaponStrategy weapon, Transform transForm) {
