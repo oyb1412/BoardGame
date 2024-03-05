@@ -5,7 +5,7 @@ using UnityEngine;
 namespace DiceGame.Data {
     public static class LoginInfomation {
         public static ProfileDataModel profile { get; private set; }
-        public static bool isLoggedIn => profile.isValid;
+        public static bool isLoggedIn => profile == null ? false : profile.isValid;
         public static bool isTesting = true;
 
         

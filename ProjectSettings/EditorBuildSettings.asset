@@ -6,7 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/01.Scenes/DiceGame.unity
+    path: Assets/01.Scenes/Main.unity
+    guid: c55e1a9a078375e4e92854b7221079ea
+  - enabled: 1
+    path: Assets/01.Scenes/DicePlay.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/01.Scenes/Login.unity

@@ -7,7 +7,7 @@ using TMPro;
 namespace DiceGame.UI {
     public class InventorySlot : MonoBehaviour {
         public int slotID { get; set; }
-        [SerializeField] Image _icon;
+        [field : SerializeField]public Image _icon { get; private set; }
         [SerializeField] TMP_Text _num;
 
         public void Refresh(int itemID, int itemNum) {

@@ -1,5 +1,7 @@
 using DiceGame.Data;
+using DiceGame.Data.Mock;
 using DiceGame.Singleton;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,8 +21,11 @@ namespace DiceGame.Game {
         InGame,
     }
     public class GameManager : SingletonMonoBase<GameManager> {
-        [SerializeField]
-        private GameState _state;
+
+        [field: SerializeField] public bool isTesting { get; private set; }
+        public IUnitOfWork unitOfWork { get; private set; }
+
+        [SerializeField] private GameState _state;
         public GameState state {
             get {
                 return _state;
@@ -39,7 +44,6 @@ namespace DiceGame.Game {
         private void Update() {
             Workflow();
         }
-
         private void Workflow() {
             switch (_state) {
                 case GameState.None:
@@ -55,10 +59,18 @@ namespace DiceGame.Game {
                     }
                     break;
                 case GameState.LoadResources:
+                    if (isTesting)
+                        unitOfWork = new MockUnitOfWork();
+                    else
+                        unitOfWork = new UnitOfWork();
+                    state++;
                     break;
                 case GameState.WaitUntilResourcesLoaded:
+                    SceneManager.LoadScene("DicePlay");
+                    state++;
                     break;
                 case GameState.InGame:
+
                     break;
                 default:
                     break;
